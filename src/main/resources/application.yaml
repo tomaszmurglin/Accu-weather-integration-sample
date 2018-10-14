@@ -1,0 +1,20 @@
+#spring
+server:
+  port: 8080
+  servlet:
+    context-path: '/api'
+spring:
+  application:
+    name: 'accu-weather-integration-sample'
+logging:
+  ##file: ${project.build.directory}/logs/server.log
+  level.root: INFO
+
+#custom
+accu-weather:
+  api:
+    apiKey: "qW61RZpxSvuUXVTkZeRp60qfsLA7Y2f4"
+    hostName: "dataservice.accuweather.com"
+    version: "v1"
+
+
