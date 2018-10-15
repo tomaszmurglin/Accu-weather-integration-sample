@@ -1,26 +1,24 @@
-package com.murglin.consulting.accuweatherintegrationsample.cities.comparator.command;
+package com.murglin.consulting.accuweatherintegrationsample.cities.comparator.client;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.exception.AccuWeatherException;
+import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.model.WeatherCondition;
 import com.murglin.consulting.accuweatherintegrationsample.configuration.AccuWeatherConfig;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
-import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class AccuWeatherHttpCommand {
+public class AccuWeatherCurrentConditionsClient {
 
   private final AccuWeatherConfig accuWeatherConfig;
 
   @Autowired
-  public AccuWeatherHttpCommand(AccuWeatherConfig accuWeatherConfig) {
+  public AccuWeatherCurrentConditionsClient(AccuWeatherConfig accuWeatherConfig) {
     this.accuWeatherConfig = accuWeatherConfig;
   }
 
@@ -29,32 +27,32 @@ public class AccuWeatherHttpCommand {
       @HystrixProperty(name = "corePoolSize", value = "10")}, commandProperties = {
       @HystrixProperty(name = "circuitBreakerRequestVolumeThreshold", value = "5"),
       @HystrixProperty(name = "metricsRollingStatisticalWindowInMilliseconds", value = "5000")})
-  public List<String> fetchLocationKeysForGivenCitiesNames(Set<String> citiesNames)
-      throws IOException {
+  public Collection<WeatherCondition> fetchCurrentWeatherConditionsForGivenCitiesKeys(
+      Collection<String> citiesKeys) {
     var accuWeatherApi = accuWeatherConfig.getApi();
+
     AccuWeatherQuery.AccuWeatherQueryBuilder accuWeatherQueryBuilder = new AccuWeatherQuery.AccuWeatherQueryBuilder(
         accuWeatherApi.getHostName());
+    accuWeatherQueryBuilder = accuWeatherQueryBuilder.currentConditions()
+        .version(accuWeatherApi.getVersion());
 
-    List<String> citiesKeys = Lists.newArrayList();
+    List<WeatherCondition> weatherConditions = Lists.newArrayList();
 
-    for (String cityName : citiesNames) {
-      AccuWeatherQuery accuWeatherQuery = accuWeatherQueryBuilder.locations()
-          .version(accuWeatherApi.getVersion()).cities()
-          .search().apiKey(accuWeatherApi.getApiKey()).query(cityName).build();
+    for (String cityKey : citiesKeys) {
+      AccuWeatherQuery accuWeatherQuery = accuWeatherQueryBuilder.param(cityKey)
+          .apiKey(accuWeatherApi.getApiKey()).details(false).build();
       RestTemplate restTemplate = new RestTemplate();
-      ResponseEntity<String> response = restTemplate
-          .getForEntity(accuWeatherQuery.getUrl(), String.class);
-      ObjectMapper mapper = new ObjectMapper();
-      JsonNode root = mapper.readTree(response.getBody());
-      JsonNode key = root.get(0).path("Key");
-      citiesKeys.add(key.asText());
+      WeatherCondition weatherCondition = restTemplate
+          .getForObject(accuWeatherQuery.getUrl(), WeatherCondition.class);
+      weatherConditions.add(weatherCondition);
     }
 
-    return citiesKeys;
+    return ImmutableList.copyOf(weatherConditions);
   }
 
   private List<String> getFallback() {
     // simply failfast without trying to keep promise
     throw new AccuWeatherException();
   }
+
 }

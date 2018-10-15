@@ -25,6 +25,7 @@
     <java.version>1.8</java.version>
     <spring-cloud.version>Finchley.SR1</spring-cloud.version>
     <lombok.version>1.18.2</lombok.version>
+    <jsr305.version>2.0.1</jsr305.version>
   </properties>
 
   <dependencies>
@@ -80,6 +81,11 @@
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>${lombok.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>${jsr305.version}</version>
     </dependency>
   </dependencies>
 

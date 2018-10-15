@@ -1,8 +1,10 @@
-package com.murglin.consulting.accuweatherintegrationsample.cities.comparator.command;
+package com.murglin.consulting.accuweatherintegrationsample.cities.comparator.client;
 
 class AccuWeatherQuery {
 
   private static final String LOCATIONS = "locations";
+
+  private static final String CURRENT_CONDITIONS = "currentconditions";
 
   private static final String CITIES = "cities";
 
@@ -11,6 +13,8 @@ class AccuWeatherQuery {
   private static final String API_KEY = "apikey";
 
   private static final String QUERY_PARAM = "&q";
+
+  private static final String DETAILS = "details";
 
   private final String url;
 
@@ -66,6 +70,21 @@ class AccuWeatherQuery {
 
     AccuWeatherQueryBuilder query(String queryParam) {
       appendUrl(QUERY_PARAM + "=" + queryParam);
+      return this;
+    }
+
+    AccuWeatherQueryBuilder currentConditions() {
+      appendUrl(CURRENT_CONDITIONS);
+      return this;
+    }
+
+    AccuWeatherQueryBuilder details(boolean enabled) {
+      appendUrl(DETAILS + "=" + enabled);
+      return this;
+    }
+
+    AccuWeatherQueryBuilder param(String param) {
+      appendUrl(param);
       return this;
     }
 

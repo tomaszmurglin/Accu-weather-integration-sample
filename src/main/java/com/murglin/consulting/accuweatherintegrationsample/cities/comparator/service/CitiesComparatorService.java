@@ -1,21 +1,27 @@
 package com.murglin.consulting.accuweatherintegrationsample.cities.comparator.service;
 
-import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.command.AccuWeatherHttpCommand;
-import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.model.Weather;
+import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.client.AccuWeatherCurrentConditionsClient;
+import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.client.AccuWeatherLocationsClient;
+import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.model.WeatherCondition;
+import java.io.IOException;
 import java.util.Collection;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class CitiesComparatorService {
 
-  private final AccuWeatherHttpCommand accuWeatherHttpCommand;
+  private final AccuWeatherLocationsClient accuWeatherLocationsClient;
 
-  public String chooseCityWithTheBestWeather(Set<String> citiesNames) {
-    Collection<Weather> weathers = accuWeatherHttpCommand.fetchLocationKeysForGivenCitiesNames(citiesNames);
+  private final AccuWeatherCurrentConditionsClient accuWeatherCurrentConditionsClient;
+
+  public String chooseCityWithTheBestWeather(Set<String> citiesNames) throws IOException {
+    Collection<String> citiesLocationKeys = accuWeatherLocationsClient
+        .fetchLocationKeysForGivenCitiesNames(citiesNames);
+    Collection<WeatherCondition> weatherConditions = accuWeatherCurrentConditionsClient
+        .fetchCurrentWeatherConditionsForGivenCitiesKeys(citiesLocationKeys);
     //TODO compare by given criteria
     return "";
   }

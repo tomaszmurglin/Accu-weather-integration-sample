@@ -13,7 +13,7 @@ logging:
 #custom
 accu-weather:
   api:
-    apiKey: "qW61RZpxSvuUXVTkZeRp60qfsLA7Y2f4"
+    apiKey: ""
     hostName: "dataservice.accuweather.com"
     version: "v1"
 
