@@ -2,35 +2,31 @@ package com.murglin.consulting.accuweatherintegrationsample.cities.comparator.cl
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.exception.AccuWeatherException;
+import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.exception.AccuWeatherServiceNotAvailableException;
 import com.murglin.consulting.accuweatherintegrationsample.configuration.AccuWeatherConfig;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
+@RequiredArgsConstructor
 public class AccuWeatherLocationsClient {
 
   private final AccuWeatherConfig accuWeatherConfig;
 
-  @Autowired
-  public AccuWeatherLocationsClient(AccuWeatherConfig accuWeatherConfig) {
-    this.accuWeatherConfig = accuWeatherConfig;
-  }
-
   @com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand(fallbackMethod = "getFallback", threadPoolProperties = {
       @HystrixProperty(name = "maxQueueSize", value = "-1"),
-      @HystrixProperty(name = "corePoolSize", value = "10")}, commandProperties = {
-      @HystrixProperty(name = "circuitBreakerRequestVolumeThreshold", value = "5"),
-      @HystrixProperty(name = "metricsRollingStatisticalWindowInMilliseconds", value = "5000")})
-  public List<String> fetchLocationKeysForGivenCitiesNames(Set<String> citiesNames)
+      @HystrixProperty(name = "coreSize", value = "10")}, commandProperties = {
+      @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "5"),
+      @HystrixProperty(name = "metrics.rollingStats.timeInMilliseconds", value = "5000")})
+  public Set<String> fetchLocationKeysForGivenCitiesNames(Set<String> citiesNames)
       throws IOException {
     var accuWeatherApi = accuWeatherConfig.getApi();
 
@@ -53,11 +49,11 @@ public class AccuWeatherLocationsClient {
       citiesKeys.add(key.asText());
     }
 
-    return ImmutableList.copyOf(citiesKeys);
+    return ImmutableSet.copyOf(citiesKeys);
   }
 
-  private List<String> getFallback() {
+  private Set<String> getFallback(Set<String> citiesNames, Throwable reason) {
     // simply failfast without trying to keep promise
-    throw new AccuWeatherException();
+    throw new AccuWeatherServiceNotAvailableException();
   }
 }

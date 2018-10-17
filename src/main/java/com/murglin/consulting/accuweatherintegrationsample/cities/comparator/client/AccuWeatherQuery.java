@@ -2,19 +2,23 @@ package com.murglin.consulting.accuweatherintegrationsample.cities.comparator.cl
 
 class AccuWeatherQuery {
 
+  private static final String QUESTION_MARK = "?";
+
+  private static final String AMPERSAND_MARK = "&";
+
   private static final String LOCATIONS = "locations";
 
   private static final String CURRENT_CONDITIONS = "currentconditions";
 
   private static final String CITIES = "cities";
 
-  private static final String SEARCH = "search?";
+  private static final String API_KEY = QUESTION_MARK + "apikey";
 
-  private static final String API_KEY = "apikey";
+  private static final String DETAILS = AMPERSAND_MARK + "details";
 
-  private static final String QUERY_PARAM = "&q";
+  private static final String SEARCH = "search";
 
-  private static final String DETAILS = "details";
+  private static final String QUERY_PARAM = AMPERSAND_MARK + "q";
 
   private final String url;
 
@@ -39,7 +43,8 @@ class AccuWeatherQuery {
     }
 
     private void appendUrl(String value) {
-      String delimiter = url.endsWith("?") ? "" : "/";
+      String delimiter = url.endsWith(QUESTION_MARK) || url.endsWith(AMPERSAND_MARK) || value
+          .startsWith(QUESTION_MARK) || value.startsWith(AMPERSAND_MARK) ? "" : "/";
       setUrl(url + delimiter + value);
     }
 

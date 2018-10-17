@@ -13,8 +13,8 @@ logging:
 #custom
 accu-weather:
   api:
-    apiKey: ""
-    hostName: "dataservice.accuweather.com"
+    apiKey:
+    hostName: "http://dataservice.accuweather.com"
     version: "v1"
 
 

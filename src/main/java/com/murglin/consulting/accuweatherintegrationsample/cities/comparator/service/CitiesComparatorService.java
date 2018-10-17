@@ -4,7 +4,7 @@ import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.cli
 import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.client.AccuWeatherLocationsClient;
 import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.model.WeatherCondition;
 import java.io.IOException;
-import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,9 +18,9 @@ public class CitiesComparatorService {
   private final AccuWeatherCurrentConditionsClient accuWeatherCurrentConditionsClient;
 
   public String chooseCityWithTheBestWeather(Set<String> citiesNames) throws IOException {
-    Collection<String> citiesLocationKeys = accuWeatherLocationsClient
+    Set<String> citiesLocationKeys = accuWeatherLocationsClient
         .fetchLocationKeysForGivenCitiesNames(citiesNames);
-    Collection<WeatherCondition> weatherConditions = accuWeatherCurrentConditionsClient
+    List<WeatherCondition> weatherConditions = accuWeatherCurrentConditionsClient
         .fetchCurrentWeatherConditionsForGivenCitiesKeys(citiesLocationKeys);
     //TODO compare by given criteria
     return "";
