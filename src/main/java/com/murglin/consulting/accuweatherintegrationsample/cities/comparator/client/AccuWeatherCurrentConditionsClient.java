@@ -23,6 +23,17 @@ public class AccuWeatherCurrentConditionsClient {
       @HystrixProperty(name = "coreSize", value = "10")}, commandProperties = {
       @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "5"),
       @HystrixProperty(name = "metrics.rollingStats.timeInMilliseconds", value = "5000")})
+  private WeatherCondition fetchCurrentWeatherConditionForGivenCitiesKey(String cityKey,
+      AccuWeatherQuery.AccuWeatherQueryBuilder accuWeatherQueryBuilder) {
+    var accuWeatherApi = accuWeatherConfig.getApi();
+    AccuWeatherQuery accuWeatherQuery = accuWeatherQueryBuilder.param(cityKey)
+        .apiKey(accuWeatherApi.getApiKey()).details(false).build();
+    RestTemplate restTemplate = new RestTemplate();
+    WeatherCondition[] weatherCondition = restTemplate
+        .getForObject(accuWeatherQuery.getUrl(), WeatherCondition[].class);
+    return weatherCondition[0];
+  }
+
   public List<WeatherCondition> fetchCurrentWeatherConditionsForGivenCitiesKeys(
       Set<String> citiesKeys) {
     var accuWeatherApi = accuWeatherConfig.getApi();
@@ -35,12 +46,9 @@ public class AccuWeatherCurrentConditionsClient {
     List<WeatherCondition> weatherConditions = Lists.newArrayList();
 
     for (String cityKey : citiesKeys) {
-      AccuWeatherQuery accuWeatherQuery = accuWeatherQueryBuilder.param(cityKey)
-          .apiKey(accuWeatherApi.getApiKey()).details(false).build();
-      RestTemplate restTemplate = new RestTemplate();
-      WeatherCondition[] weatherCondition = restTemplate
-          .getForObject(accuWeatherQuery.getUrl(), WeatherCondition[].class);
-      weatherConditions.add(weatherCondition[0]);
+      WeatherCondition weatherCondition = fetchCurrentWeatherConditionForGivenCitiesKey(cityKey,
+          accuWeatherQueryBuilder);
+      weatherConditions.add(weatherCondition);
     }
 
     return ImmutableList.copyOf(weatherConditions);

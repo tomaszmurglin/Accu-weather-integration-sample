@@ -26,6 +26,18 @@ public class AccuWeatherLocationsClient {
       @HystrixProperty(name = "coreSize", value = "10")}, commandProperties = {
       @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "5"),
       @HystrixProperty(name = "metrics.rollingStats.timeInMilliseconds", value = "5000")})
+  private String fetchLocationKeyForGivenCitiesName(String cityName,
+      AccuWeatherQuery.AccuWeatherQueryBuilder accuWeatherQueryBuilder)
+      throws IOException {
+    AccuWeatherQuery accuWeatherQuery = accuWeatherQueryBuilder.query(cityName).build();
+    RestTemplate restTemplate = new RestTemplate();
+    ResponseEntity<String> response = restTemplate
+        .getForEntity(accuWeatherQuery.getUrl(), String.class);
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode root = mapper.readTree(response.getBody());
+    return root.get(0).path("Key").asText();
+  }
+
   public Set<String> fetchLocationKeysForGivenCitiesNames(Set<String> citiesNames)
       throws IOException {
     var accuWeatherApi = accuWeatherConfig.getApi();
@@ -39,14 +51,8 @@ public class AccuWeatherLocationsClient {
     List<String> citiesKeys = Lists.newArrayList();
 
     for (String cityName : citiesNames) {
-      AccuWeatherQuery accuWeatherQuery = accuWeatherQueryBuilder.query(cityName).build();
-      RestTemplate restTemplate = new RestTemplate();
-      ResponseEntity<String> response = restTemplate
-          .getForEntity(accuWeatherQuery.getUrl(), String.class);
-      ObjectMapper mapper = new ObjectMapper();
-      JsonNode root = mapper.readTree(response.getBody());
-      JsonNode key = root.get(0).path("Key");
-      citiesKeys.add(key.asText());
+      String key = fetchLocationKeyForGivenCitiesName(cityName, accuWeatherQueryBuilder);
+      citiesKeys.add(key);
     }
 
     return ImmutableSet.copyOf(citiesKeys);
