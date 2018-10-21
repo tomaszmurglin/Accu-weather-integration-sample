@@ -25,7 +25,8 @@ public class CitiesComparatorController {
       TODO:
       logging, exception handling, security, cloud, validation, persistance, presentation layer, javadocs with author, springfox, api
       versioning, dockerize it with Fabric8 plugin or google JIB, sevrlet 3.0 api async, apsects for logging, readme, move secrets to spirng cloud config vault, tests
-      replace feign instead of rest templates, protect db integration with Hystrix also, implements Hystrix collapse method, use https to call accu weather
+      replace feign instead of rest templates, protect db integration with Hystrix also, implements Hystrix collapse method, use https to call accu weather,
+      tomcat gracefull shutdown
      */
 
   static final String MAPPING = "cities/compare";
