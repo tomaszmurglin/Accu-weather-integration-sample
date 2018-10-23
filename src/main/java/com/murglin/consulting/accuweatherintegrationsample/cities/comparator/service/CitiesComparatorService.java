@@ -33,6 +33,6 @@ public class CitiesComparatorService {
     WeatherConditionComparator comparator = weatherConditionComparators.stream()
         .filter(c -> c.apply(comparisonCriteria)).findFirst()
         .orElseThrow(WeatherConditionComparatorNotFoundException::new);
-    return Ordering.natural().immutableSortedCopy(weatherConditions);
+    return Ordering.from(comparator).immutableSortedCopy(weatherConditions);
   }
 }

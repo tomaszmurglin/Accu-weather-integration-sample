@@ -8,7 +8,7 @@ import lombok.Data;
 // No immutable cause of https://github.com/rzwitserloot/lombok/issues/1563
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-final class Temperature {
+public final class Temperature {
 
   @JsonProperty("Metric")
   private Metric metric;
