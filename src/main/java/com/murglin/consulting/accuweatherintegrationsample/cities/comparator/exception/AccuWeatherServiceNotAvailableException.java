@@ -3,7 +3,7 @@ package com.murglin.consulting.accuweatherintegrationsample.cities.comparator.ex
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR, reason = "AccuWeather web service is not available")
+@ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR, reason = "AccuWeather web service is not available.")
 public class AccuWeatherServiceNotAvailableException extends RuntimeException {
 
   public AccuWeatherServiceNotAvailableException() {

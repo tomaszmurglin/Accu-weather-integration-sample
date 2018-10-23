@@ -3,7 +3,7 @@ package com.murglin.consulting.accuweatherintegrationsample.cities.comparator.ex
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Invalid comparison criteria.")
-public class InvalidComparisonCriteriaException extends RuntimeException {
+@ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "Same cities have been requested to compare.")
+public class SameCitiesRequestedException extends RuntimeException {
 
 }

@@ -1,4 +1,4 @@
-package com.murglin.consulting.accuweatherintegrationsample.cities.comparator.exception;
+package com.murglin.consulting.accuweatherintegrationsample.cities.comparator.exception.handler;
 
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.core.annotation.AnnotationUtils;

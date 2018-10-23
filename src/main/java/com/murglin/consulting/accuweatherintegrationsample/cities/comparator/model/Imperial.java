@@ -2,18 +2,19 @@
 package com.murglin.consulting.accuweatherintegrationsample.cities.comparator.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import javax.annotation.concurrent.Immutable;
-import javax.annotation.concurrent.ThreadSafe;
-import lombok.Value;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
-@ThreadSafe
-@Immutable
-@Value
+// No immutable cause of https://github.com/rzwitserloot/lombok/issues/1563
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 final class Imperial {
 
-  private final Integer value;
-  private final String unit;
-  private final Integer unitType;
+  @JsonProperty("Value")
+  private Integer value;
+  @JsonProperty("Unit")
+  private String unit;
+  @JsonProperty("UnitType")
+  private Integer unitType;
 
 }

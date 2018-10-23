@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.exception.AccuWeatherServiceNotAvailableException;
+import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.exception.CitiesTooCloseToEachOtherException;
 import com.murglin.consulting.accuweatherintegrationsample.configuration.AccuWeatherConfig;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import java.io.IOException;
@@ -53,6 +54,10 @@ public class AccuWeatherLocationsClient {
     for (String cityName : citiesNames) {
       String key = fetchLocationKeyForGivenCitiesName(cityName, accuWeatherQueryBuilder);
       citiesKeys.add(key);
+    }
+
+    if (citiesKeys.size() != citiesNames.size()) {
+      throw new CitiesTooCloseToEachOtherException();
     }
 
     return ImmutableSet.copyOf(citiesKeys);
