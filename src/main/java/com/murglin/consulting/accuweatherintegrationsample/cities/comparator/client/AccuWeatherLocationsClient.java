@@ -2,14 +2,14 @@ package com.murglin.consulting.accuweatherintegrationsample.cities.comparator.cl
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.exception.AccuWeatherServiceNotAvailableException;
 import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.exception.CitiesTooCloseToEachOtherException;
 import com.murglin.consulting.accuweatherintegrationsample.configuration.AccuWeatherConfig;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +39,7 @@ public class AccuWeatherLocationsClient {
     return root.get(0).path("Key").asText();
   }
 
-  public Set<String> fetchLocationKeysForGivenCitiesNames(Set<String> citiesNames)
+  public Map<String, String> fetchLocationKeysForGivenCitiesNames(Set<String> citiesNames)
       throws IOException {
     var accuWeatherApi = accuWeatherConfig.getApi();
 
@@ -49,18 +49,18 @@ public class AccuWeatherLocationsClient {
         .version(accuWeatherApi.getVersion()).cities()
         .search().apiKey(accuWeatherApi.getApiKey());
 
-    List<String> citiesKeys = Lists.newArrayList();
+    Map<String, String> citiesNamesToKeys = Maps.newHashMap();
 
     for (String cityName : citiesNames) {
       String key = fetchLocationKeyForGivenCitiesName(cityName, accuWeatherQueryBuilder);
-      citiesKeys.add(key);
+      citiesNamesToKeys.put(cityName, key);
     }
 
-    if (citiesKeys.size() != citiesNames.size()) {
+    if (citiesNamesToKeys.size() != citiesNames.size()) {
       throw new CitiesTooCloseToEachOtherException();
     }
 
-    return ImmutableSet.copyOf(citiesKeys);
+    return ImmutableMap.copyOf(citiesNamesToKeys);
   }
 
   private Set<String> getFallback(Set<String> citiesNames, Throwable reason) {

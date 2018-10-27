@@ -5,7 +5,7 @@ import static com.murglin.consulting.accuweatherintegrationsample.cities.compara
 import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.exception.InvalidComparisonCriteriaException;
 import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.exception.SameCitiesRequestedException;
 import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.model.ComparisonCriteria;
-import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.model.WeatherCondition;
+import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.model.dto.WeatherConditionDTO;
 import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.service.CitiesComparatorService;
 import java.io.IOException;
 import java.util.Arrays;
@@ -29,11 +29,13 @@ public class CitiesComparatorController {
     
     /*
       TODO:
-      logging, exception handling, security, cloud, validation, persistance, presentation layer, javadocs with author, springfox swagger, api
+      logging, exception handling, security, cloud, validation, persistance, presentation layer - spring data, javadocs with author, springfox swagger, api
       versioning, dockerize it with Fabric8 plugin or google JIB, sevrlet 3.0 api async, apsects for logging, readme, move secrets to spirng cloud config vault, tests
       replace feign instead of rest templates, protect db integration with Hystrix also, implements Hystrix collapse method, use https to call accu weather,
-      tomcat gracefull shutdown
+      tomcat gracefull shutdown, lgtm, travis ci
      */
+
+  //TODO dto instead of weather cond and wrapped, validtion using hiebrnate validator or extract it to standalone validator class,HATEOAS, split calls to accu weather to multiple threads
 
   static final String MAPPING = "cities/compare";
 
@@ -41,16 +43,14 @@ public class CitiesComparatorController {
 
   @GetMapping(value = "/{citiesNames}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
   @ResponseStatus(HttpStatus.OK)
-  public List<WeatherCondition> compareCitiesByWeatherConditions(@PathVariable String[] citiesNames,
-      @RequestParam("criteria") String comparisonCriteria)
+  public List<WeatherConditionDTO> compareCitiesByWeatherConditions(@PathVariable String[] citiesNames,
+      @RequestParam("criteria") String comparisonCriteriaParam)
       throws IOException {
 
-    boolean isComparisonCriteriaNotValid = Arrays.stream(ComparisonCriteria.values())
-        .map(Enum::toString)
-        .noneMatch(e -> e.equalsIgnoreCase(comparisonCriteria));
-    if (isComparisonCriteriaNotValid) {
-      throw new InvalidComparisonCriteriaException();
-    }
+    ComparisonCriteria comparisonCriteria = Arrays.stream(ComparisonCriteria.values())
+        .filter(e -> e.toString().equalsIgnoreCase(comparisonCriteriaParam)).findFirst()
+        .orElseThrow(
+            InvalidComparisonCriteriaException::new);
 
     Set<String> citiesNamesSet = Arrays.stream(citiesNames).collect(
         Collectors.toSet());
@@ -59,7 +59,7 @@ public class CitiesComparatorController {
     }
 
     return citiesComparatorService
-        .compareCitiesByWeatherConditions(citiesNamesSet);
+        .compareCitiesByWeatherConditions(citiesNamesSet, comparisonCriteria);
   }
 }
 

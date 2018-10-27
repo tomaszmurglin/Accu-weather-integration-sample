@@ -1,12 +1,14 @@
 package com.murglin.consulting.accuweatherintegrationsample.cities.comparator.client;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.exception.AccuWeatherServiceNotAvailableException;
 import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.model.WeatherCondition;
 import com.murglin.consulting.accuweatherintegrationsample.configuration.AccuWeatherConfig;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -34,8 +36,8 @@ public class AccuWeatherCurrentConditionsClient {
     return weatherCondition[0];
   }
 
-  public List<WeatherCondition> fetchCurrentWeatherConditionsForGivenCitiesKeys(
-      Set<String> citiesKeys) {
+  public Map<String, WeatherCondition> fetchCurrentWeatherConditionsForGivenCitiesKeys(
+      Map<String, String> citiesNamesToLocationKeys) {
     var accuWeatherApi = accuWeatherConfig.getApi();
 
     AccuWeatherQuery.AccuWeatherQueryBuilder accuWeatherQueryBuilder = new AccuWeatherQuery.AccuWeatherQueryBuilder(
@@ -43,15 +45,16 @@ public class AccuWeatherCurrentConditionsClient {
     accuWeatherQueryBuilder = accuWeatherQueryBuilder.currentConditions()
         .version(accuWeatherApi.getVersion());
 
-    List<WeatherCondition> weatherConditions = Lists.newArrayList();
+    Map<String, WeatherCondition> citiesNamesToWeatherConditions = Maps.newHashMap();
 
-    for (String cityKey : citiesKeys) {
-      WeatherCondition weatherCondition = fetchCurrentWeatherConditionForGivenCitiesKey(cityKey,
+    for (Entry<String, String> cityNameToKey : citiesNamesToLocationKeys.entrySet()) {
+      WeatherCondition weatherCondition = fetchCurrentWeatherConditionForGivenCitiesKey(
+          cityNameToKey.getValue(),
           accuWeatherQueryBuilder);
-      weatherConditions.add(weatherCondition);
+      citiesNamesToWeatherConditions.put(cityNameToKey.getKey(), weatherCondition);
     }
 
-    return ImmutableList.copyOf(weatherConditions);
+    return ImmutableMap.copyOf(citiesNamesToWeatherConditions);
   }
 
   private List<WeatherCondition> getFallback(Set<String> citiesKeys, Throwable reason) {

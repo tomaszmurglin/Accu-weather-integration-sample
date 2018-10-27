@@ -3,7 +3,9 @@ package com.murglin.consulting.accuweatherintegrationsample.cities.comparator.se
 import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.model.ComparisonCriteria;
 import com.murglin.consulting.accuweatherintegrationsample.cities.comparator.model.WeatherCondition;
 import java.math.BigDecimal;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TemperatureComparator implements WeatherConditionComparator {
 
   @Override
