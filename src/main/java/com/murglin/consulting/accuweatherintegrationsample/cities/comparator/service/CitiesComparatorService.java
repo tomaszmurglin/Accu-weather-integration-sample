@@ -40,7 +40,7 @@ public class CitiesComparatorService {
 
     return citiesNamesToWeatherConditions.entrySet()
         .stream()
-        .sorted((e1, e2) -> comparator.compare(e1.getValue(), e2.getValue()))
+        .sorted((e1, e2) -> comparator.reversed().compare(e1.getValue(), e2.getValue()))
         .map(e -> new WeatherConditionDTO(e.getKey(), e.getValue())).collect(
             Collectors.toList());
 

@@ -122,14 +122,8 @@ class CitiesComparatorServiceTest {
     //when
     Throwable runtimeException = assertThrows(WeatherConditionComparatorNotFoundException.class,
         () -> {
-          ComparisonCriteria NOT_IMPLEMENTED_COMPARISON_CRITERIA = PowerMockito.mock(MyEnum.class);
-          Whitebox.setInternalState(C, "name", "C");
-          Whitebox.setInternalState(C, "ordinal", 2);
-
-          PowerMockito.mockStatic(MyEnum.class);
-
           citiesComparatorService
-              .compareCitiesByWeatherConditions(CITIES_NAMES, ComparisonCriteria.TEMPERATURE);
+              .compareCitiesByWeatherConditions(CITIES_NAMES, null);
         });
     //then
     assertEquals(

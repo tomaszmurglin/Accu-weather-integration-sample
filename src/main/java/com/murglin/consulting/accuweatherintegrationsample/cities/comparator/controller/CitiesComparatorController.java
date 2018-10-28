@@ -30,12 +30,12 @@ public class CitiesComparatorController {
     /*
       TODO:
       logging, exception handling, security, cloud, validation, persistance, presentation layer - spring data, javadocs with author, springfox swagger, api
-      versioning, dockerize it with Fabric8 plugin or google JIB, sevrlet 3.0 api async, apsects for logging, readme, move secrets to spirng cloud config vault, tests
+      versioning, dockerize it with Fabric8 plugin or google JIB, sevrlet 3.0 api async, apsects for logging, readme, move secrets to spirng cloud config vault, tests including mockmvc
       replace feign instead of rest templates, protect db integration with Hystrix also, implements Hystrix collapse method, use https to call accu weather,
       tomcat gracefull shutdown, lgtm, travis ci
      */
 
-  //TODO dto instead of weather cond and wrapped, validtion using hiebrnate validator or extract it to standalone validator class,HATEOAS, split calls to accu weather to multiple threads
+  //TODO dto instead of weather cond and wrapped, validtion using hiebrnate validator or extract it to standalone validator class,HATEOAS including exceptions, split calls to accu weather to multiple threads
 
   static final String MAPPING = "cities/compare";
 
@@ -43,7 +43,8 @@ public class CitiesComparatorController {
 
   @GetMapping(value = "/{citiesNames}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
   @ResponseStatus(HttpStatus.OK)
-  public List<WeatherConditionDTO> compareCitiesByWeatherConditions(@PathVariable String[] citiesNames,
+  public List<WeatherConditionDTO> compareCitiesByWeatherConditions(
+      @PathVariable String[] citiesNames,
       @RequestParam("criteria") String comparisonCriteriaParam)
       throws IOException {
 

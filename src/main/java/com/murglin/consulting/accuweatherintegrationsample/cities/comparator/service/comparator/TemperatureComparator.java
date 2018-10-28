@@ -10,9 +10,9 @@ public class TemperatureComparator implements WeatherConditionComparator {
 
   @Override
   public int compare(WeatherCondition o1, WeatherCondition o2) {
-    BigDecimal weatherCondition1 = BigDecimal.valueOf(o1.getTemperature().getMetric().getValue());
-    BigDecimal weatherCondition2 = BigDecimal.valueOf(o2.getTemperature().getMetric().getValue());
-    return weatherCondition1.compareTo(weatherCondition2);
+    BigDecimal temperature1 = BigDecimal.valueOf(o1.getTemperature().getMetric().getValue());
+    BigDecimal temperature2 = BigDecimal.valueOf(o2.getTemperature().getMetric().getValue());
+    return temperature1.compareTo(temperature2);
   }
 
   @Override
